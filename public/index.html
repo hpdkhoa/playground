@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* The playground: one page at a time, full size; the page index slides in from the left behind the menu button. */
+:root {
+  --bg: #eef0eb; --panel: #f8f9f6; --ink: #1c201d; --muted: #59625b; --rule: #c9cfc6; --accent: #4c5a2e; --accent-soft: #dfe5d2;
+  --scrim: rgba(20, 24, 21, 0.35);
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #131614; --panel: #1a1e1b; --ink: #e2e6df; --muted: #9ba59c; --rule: #333a34; --accent: #aebd86; --accent-soft: #2a3220;
+          --scrim: rgba(0, 0, 0, 0.5); color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; overflow: hidden; }
+#view { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: var(--bg); display: block; }
+#menu-btn {
+  position: fixed; z-index: 30;
+  top: calc(12px + env(safe-area-inset-top, 0px)); left: calc(12px + env(safe-area-inset-left, 0px));
+  width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink);
+  display: grid; place-items: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+#menu-btn:hover { border-color: var(--accent); }
+#menu-btn:focus-visible, .item:focus-visible, #close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#menu-btn svg { width: 22px; height: 22px; }
+#scrim { position: fixed; inset: 0; z-index: 20; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#drawer {
+  position: fixed; z-index: 40; top: 0; bottom: 0; left: 0; width: min(340px, 86vw);
+  background: var(--panel); border-right: 1px solid var(--rule);
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  transform: translateX(-100%); transition: transform 0.22s ease; display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
+}
+body.open #drawer { transform: none; }
+body.open #scrim { opacity: 1; pointer-events: auto; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.top h1 { font-family: var(--display); font-weight: 600; font-size: 26px; margin: 0; letter-spacing: 0.01em; }
+#close { width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; font-size: 18px; }
+.label { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+nav { display: grid; gap: 6px; }
+.item { display: grid; gap: 3px; padding: 10px 12px; border-radius: 6px; border: 1px solid transparent; color: inherit; text-decoration: none; }
+.item:hover { border-color: var(--rule); }
+.item[aria-current="page"] { background: var(--accent-soft); border-color: var(--accent-soft); }
+.item b { font-weight: 500; }
+.item span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.empty { color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { #drawer, #scrim { transition: none; } }
+</style>
+</head>
+<body>
+<button id="menu-btn" type="button" aria-label="Open the page index" aria-controls="drawer" aria-expanded="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+<div id="scrim"></div>
+<aside id="drawer" aria-label="Pages" aria-hidden="true">
+  <div class="top"><h1>Playground</h1><button id="close" type="button" aria-label="Close the page index">&#x2715;</button></div>
+  <div class="label">Pages</div>
+  <nav id="list"><p class="empty">Loading the pages.</p></nav>
+</aside>
+<iframe id="view" title="Page"></iframe>
+<script>
+(function () {
+  var body = document.body, btn = document.getElementById("menu-btn"), drawer = document.getElementById("drawer");
+  var list = document.getElementById("list"), view = document.getElementById("view"), pages = [];
+  function setOpen(open) {
+    body.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", String(open));
+    drawer.setAttribute("aria-hidden", String(!open));
+    if (open) { var cur = list.querySelector('[aria-current="page"]') || list.querySelector("a"); if (cur) cur.focus(); } else btn.focus();
+  }
+  function show(id) {
+    var p = pages.find(function (x) { return x.id === id; }) || pages[0];
+    if (!p) return;
+    if (view.getAttribute("src") !== p.path) view.setAttribute("src", p.path);
+    document.title = p.title + " · Playground";
+    list.querySelectorAll("a").forEach(function (a) { a.toggleAttribute("aria-current", a.dataset.id === p.id); if (a.dataset.id === p.id) a.setAttribute("aria-current", "page"); });
+    if (location.hash.slice(1) !== p.id) history.replaceState(null, "", "#" + p.id);
+  }
+  btn.addEventListener("click", function () { setOpen(!body.classList.contains("open")); });
+  document.getElementById("close").addEventListener("click", function () { setOpen(false); });
+  document.getElementById("scrim").addEventListener("click", function () { setOpen(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && body.classList.contains("open")) setOpen(false); });
+  window.addEventListener("hashchange", function () { show(location.hash.slice(1)); });
+  fetch("pages.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (data) {
+    pages = data;
+    list.innerHTML = "";
+    pages.forEach(function (p) {
+      var a = document.createElement("a");
+      a.className = "item"; a.href = "#" + p.id; a.dataset.id = p.id;
+      var b = document.createElement("b"); b.textContent = p.title;
+      var s = document.createElement("span"); s.textContent = p.about || "";
+      a.appendChild(b); a.appendChild(s);
+      a.addEventListener("click", function () { setOpen(false); });
+      list.appendChild(a);
+    });
+    show(location.hash.slice(1));
+  }).catch(function () { list.innerHTML = '<p class="empty">The page list (pages.json) did not load.</p>'; });
+})();
+</script>
+</body>
+</html>
