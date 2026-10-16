@@ -16,11 +16,7 @@ index on the left side.
 
 The index lists the pages in the order of `pages.json`. A page opens at `/#<id>`.
 
-## Cloudflare Pages
+## Cloudflare
 
-Connect this repo in Cloudflare Pages with:
-
-- Build command: none
-- Build output directory: `public`
-
-`wrangler.jsonc` says the same, so `npx wrangler pages deploy` also works from this folder.
+The site deploys as a Cloudflare Worker with static assets: no Worker script, the files in `public/`.
+`wrangler.jsonc` says so, and the build's deploy command is `npx wrangler deploy` (no build command).

@@ -1,6 +1,9 @@
 {
-  // Cloudflare Pages: a static site with no build step; Pages serves the files in ./public
+  // Cloudflare Workers, static assets only: no Worker script; Cloudflare serves the files in ./public
+  // (the build runs `npx wrangler deploy`, which reads this)
   "name": "playground",
   "compatibility_date": "2026-10-01",
-  "pages_build_output_dir": "./public"
+  "assets": {
+    "directory": "./public"
+  }
 }
