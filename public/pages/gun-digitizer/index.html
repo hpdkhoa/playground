@@ -357,7 +357,7 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
           <li><b>Working holds:</b> the rack, the press check, the magazine.</li>
           <li><b>Declared allowances:</b> body parts that may press into the gun, each with its reason.</li>
         </ul>
-        <p>Each hold searches its own turn, and a hand arcs round the gun between holds. The character's glove is counted where the palm sits, in how far the fingers close and in the clearance allowed.</p>
+        <p>Each hold searches its own turn, the firing hand searches its place on the grip, and a hand arcs round the gun between holds. The character's glove is counted where the palm sits, in how far the fingers close and in the clearance allowed, and it is drawn on the arms: the hands' surface 1.5 mm out, in olive Nomex.</p>
         <dl>
           <dt>Tools</dt><dd class="tools"><code>gunkit_build</code><code>gripstyles/pistol_two_hand.json</code><code>characters/nomex_full_gloves.json</code></dd>
           <dt>Gate</dt><dd>Every frame: anatomy, the style's grip rules, clearance with the glove, the sights each clip expects.</dd>
@@ -375,9 +375,9 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
             </tbody>
           </table>
         </div>
-        <div class="sample"><span class="eyebrow">Still failing</span>Clearance: the base of the support hand's index finger sits 0.77 cm in the gun. The support fingers should wrap over the firing hand's fingers, but Pose Lab tests a hand against the gun only, not against the other hand. The working clips still bend the support wrist past 30 degrees on part of their way. The gloves are counted in the checks but not yet drawn on the arms.</div>
+        <div class="sample"><span class="eyebrow">Still failing</span>Clearance, on every frame: the firing hand's web and the ball of its thumb run about 1 cm into the gun at the tang, and the base of the support index finger 0.77 cm into the grip. Five ways of placing the hand did not clear it. The fix is a grasp solver that places the whole hand and every finger against the gun's surface at once, and tests the support fingers against the firing hand too; Pose Lab tests a hand against the gun only. The working clips still bend the support wrist past 30 degrees on part of their way.</div>
       </div>
-      <figure class="figure"><img src="img/hands_hold.jpg" alt="The two-handed hold from the right, the left and the top: both arms forward, the firing hand on the grip with the trigger finger along the frame, the support hand wrapped under it." width="1920" height="388"><figcaption><b>Figure 7.</b> The pistol two-hand hold on the M1911A1, from the right, the left and the top. Pose Lab dev views, not the game view; the gloves are not drawn yet.</figcaption></figure>
+      <figure class="figure"><img src="img/hands_hold.jpg" alt="The two-handed hold from the right, the left and the top: both arms forward in tan sleeves, olive Nomex gloves, the firing hand on the grip with the trigger finger along the frame, the support hand wrapped under it." width="1920" height="388"><figcaption><b>Figure 7.</b> The pistol two-hand hold on the M1911A1 with the character's olive Nomex gloves, from the right, the left and the top. Pose Lab dev views, not the game view.</figcaption></figure>
     </article>
 
     <article class="step nofig">
@@ -468,7 +468,7 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
     <div class="body">
       <h3>Next</h3>
       <ul class="list">
-        <li>Finish the hands (step 10): the support fingers wrapping over the firing hand, the working clips, the gloves drawn on the arms, the eye view checked in the game.</li>
+        <li>Finish the hands (step 10): a grasp solver for the whole hand against the gun and the other hand, the working clips, the eye view checked in the game.</li>
         <li>Fit and feature checks, as Model Lab makes for its AR-15: each part's features one by one, a magazine in an open well, the slide's travel clear of the hammer, the sights in line.</li>
         <li>Cross-sections for the frame, the magazine and the small parts.</li>
         <li>The AR-15 from its blueprint, checked against Model Lab's hand-built AR-15.</li>
