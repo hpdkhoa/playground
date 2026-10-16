@@ -199,9 +199,9 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
         <dl>
           <dt>Who</dt><dd>You pick the gun and the character. Claude names the action family and the grip style from the sources.</dd>
           <dt>Tools</dt><dd class="tools"><code>gunkit_actions</code><code>gunkit_action</code></dd>
-          <dt>Out</dt><dd>The action family (18 exist), the grip style and the character profile (both planned, step 10)</dd>
+          <dt>Out</dt><dd>The action family (18 exist), the grip style (<code>weaponlab-gripstyle/1</code>) and the character (<code>weaponlab-character/1</code>)</dd>
         </dl>
-        <div class="sample"><span class="eyebrow">M1911A1</span>Action family <code>pistol_slide</code>: slide, magazine, hammer, trigger, slide stop, magazine catch. Grip style: pistol, two hands.</div>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Action family <code>pistol_slide</code>: slide, magazine, hammer, trigger, slide stop, magazine catch. Grip style: pistol, two hands. Character: a soldier in full Nomex gloves, 1.5 mm thick.</div>
       </div>
     </article>
 
@@ -345,24 +345,39 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
       </div>
     </article>
 
-    <article class="step nofig">
+    <article class="step">
       <div class="num">10<small>HANDS</small></div>
       <div class="body">
-        <div class="head"><h3>Hands by grip style, on the character</h3><span class="pill plan">Redesign planned</span></div>
-        <p>Today every gun uses one universal hand, and its clips fail the anatomy and grip checks on every gun. The redesign keeps one skeleton, so every clip plays on every character, and gives each grip style its own hand setup:</p>
+        <div class="head"><h3>Hands by grip style, on the character</h3><span class="pill part">In progress</span></div>
+        <p>One skeleton holds every gun, so every clip plays on every character. Each grip style is the hand setup on it:</p>
         <ul class="list">
-          <li>where the firing hand's web, thumb and trigger finger go</li>
-          <li>where the support hand holds, and how</li>
-          <li>the wrist and elbow targets for the stance</li>
-          <li>which hand does what in a reload</li>
-          <li>its own rules, such as the thumb clear of a pistol slide's path</li>
+          <li><b>Stance:</b> where the gun sits in front of the eye.</li>
+          <li><b>Contacts:</b> the face of the gun each palm lies on.</li>
+          <li><b>Fingers:</b> straight or wrapped, and the trigger finger off the trigger until the shot.</li>
+          <li><b>Working holds:</b> the rack, the press check, the magazine.</li>
+          <li><b>Declared allowances:</b> body parts that may press into the gun, each with its reason.</li>
         </ul>
-        <p>The hands are made on the character set in step 0, with its glove thickness counted in the clearance.</p>
+        <p>Each hold searches its own turn, and a hand arcs round the gun between holds. The character's glove is counted where the palm sits, in how far the fingers close and in the clearance allowed.</p>
         <dl>
+          <dt>Tools</dt><dd class="tools"><code>gunkit_build</code><code>gripstyles/pistol_two_hand.json</code><code>characters/nomex_full_gloves.json</code></dd>
           <dt>Gate</dt><dd>Every frame: anatomy, the style's grip rules, clearance with the glove, the sights each clip expects.</dd>
         </dl>
-        <div class="sample"><span class="eyebrow">M1911A1</span>Grip style "pistol, two hands": the firing hand high under the tang, the support hand wrapping its fingers, both thumbs forward. Source: FM 3-23.35 (2003), paragraph 2-3.</div>
+        <div class="scroll" style="border:0">
+          <table style="min-width:520px">
+            <thead><tr><th>M1911A1 clip</th><th>Anatomy frames</th><th>Grip frames</th><th>Before the styles</th></tr></thead>
+            <tbody>
+              <tr><td>Idle, walk, run, fire</td><td>0</td><td>0</td><td>every frame failed</td></tr>
+              <tr><td>Reload</td><td>34 of 121</td><td>17</td><td>110</td></tr>
+              <tr><td>Empty reload</td><td>36 of 133</td><td>44</td><td>121</td></tr>
+              <tr><td>Charge (slingshot)</td><td>44 of 67</td><td>47</td><td>57</td></tr>
+              <tr><td>Chamber check</td><td>38 of 109</td><td>12</td><td>96</td></tr>
+              <tr><td>Magazine check</td><td>51 of 121</td><td>16</td><td>110</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sample"><span class="eyebrow">Still failing</span>Clearance: the base of the support hand's index finger sits 0.77 cm in the gun. The support fingers should wrap over the firing hand's fingers, but Pose Lab tests a hand against the gun only, not against the other hand. The working clips still bend the support wrist past 30 degrees on part of their way. The gloves are counted in the checks but not yet drawn on the arms.</div>
       </div>
+      <figure class="figure"><img src="img/hands_hold.jpg" alt="The two-handed hold from the right, the left and the top: both arms forward, the firing hand on the grip with the trigger finger along the frame, the support hand wrapped under it." width="1920" height="388"><figcaption><b>Figure 7.</b> The pistol two-hand hold on the M1911A1, from the right, the left and the top. Pose Lab dev views, not the game view; the gloves are not drawn yet.</figcaption></figure>
     </article>
 
     <article class="step nofig">
@@ -394,7 +409,7 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
 <section aria-labelledby="s-grip">
   <div class="eyebrow">Step 10 in detail</div>
   <h2 id="s-grip">Grip styles</h2>
-  <p>A grip style is data, as an action family is. Each family names its default style, and a gun may name another (a bullpup).</p>
+  <p>A grip style is data, as an action family is. Each family names its default style, and a gun may name another (a bullpup). The pistol two-hand style is built; the others are planned.</p>
   <div class="scroll">
     <table>
       <thead><tr><th>Grip style</th><th>Action families</th><th>Firing hand</th><th>Support hand</th><th>Source</th></tr></thead>
@@ -453,7 +468,8 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
     <div class="body">
       <h3>Next</h3>
       <ul class="list">
-        <li>The hands by grip style, on the character (step 10).</li>
+        <li>Finish the hands (step 10): the support fingers wrapping over the firing hand, the working clips, the gloves drawn on the arms, the eye view checked in the game.</li>
+        <li>Fit and feature checks, as Model Lab makes for its AR-15: each part's features one by one, a magazine in an open well, the slide's travel clear of the hammer, the sights in line.</li>
         <li>Cross-sections for the frame, the magazine and the small parts.</li>
         <li>The AR-15 from its blueprint, checked against Model Lab's hand-built AR-15.</li>
         <li>One gun for each action family.</li>
