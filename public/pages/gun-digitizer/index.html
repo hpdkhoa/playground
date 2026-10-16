@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gun Digitizer Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-manual page. A narrow reading column of numbered steps, each with its figure beside it; the
+   stage strip and the deliverables up top, the hand redesign and the limits at the end. */
+:root {
+  --paper: #eef0eb;
+  --sheet: #f8f9f6;
+  --ink: #1c201d;
+  --muted: #59625b;
+  --rule: #c9cfc6;
+  --olive: #4c5a2e;
+  --olive-soft: #dfe5d2;
+  --amber: #9a5b10;
+  --amber-soft: #f3e3c8;
+  --steel: #4d5b66;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #131614; --sheet: #1a1e1b; --ink: #e2e6df; --muted: #9ba59c; --rule: #333a34;
+    --olive: #aebd86; --olive-soft: #2a3220; --amber: #e7a957; --amber-soft: #3a2b14; --steel: #9fb0bc;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #131614; --sheet: #1a1e1b; --ink: #e2e6df; --muted: #9ba59c; --rule: #333a34;
+  --olive: #aebd86; --olive-soft: #2a3220; --amber: #e7a957; --amber-soft: #3a2b14; --steel: #9fb0bc;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: 0.01em; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 700; }
+h2 { font-size: clamp(28px, 4vw, 38px); }
+h3 { font-size: 24px; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--olive); }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+a { color: var(--olive); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--olive); outline-offset: 3px; }
+section { display: grid; gap: 20px; padding-block: 44px; border-top: 1px solid var(--rule); }
+section:first-of-type { border-top: 0; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 36px; align-items: center; }
+.hero .lede { display: grid; gap: 18px; }
+.hero .lede p { font-size: 18px; color: var(--muted); }
+.figure { display: grid; gap: 8px; margin: 0; min-width: 0; }
+.figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--sheet); }
+.figure figcaption { font-family: var(--mono); font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.figure figcaption b { color: var(--ink); font-weight: 500; }
+
+/* the numbers of the sample */
+.facts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--rule); background: var(--sheet); }
+.facts div { padding: 16px 18px; border-left: 1px solid var(--rule); display: grid; gap: 4px; min-width: 0; }
+.facts div:first-child { border-left: 0; }
+.facts strong { font-family: var(--display); font-size: 32px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.facts span { font-size: 13.5px; color: var(--muted); line-height: 1.35; }
+
+/* the four stages */
+.stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.stage { padding: 14px 14px 16px; background: var(--sheet); border: 1px solid var(--rule); display: grid; gap: 6px; align-content: start; position: relative; min-width: 0; }
+.stage b { font-family: var(--display); font-size: 21px; font-weight: 600; }
+.stage span { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+.stage small { font-family: var(--mono); font-size: 11.5px; color: var(--steel); }
+.stage:not(:last-child)::after { content: "\2192"; position: absolute; right: -10px; top: 50%; transform: translate(50%, -50%); color: var(--muted); font-size: 16px; }
+
+/* deliverables */
+.get { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.get div { display: grid; gap: 6px; align-content: start; padding-top: 12px; border-top: 3px solid var(--olive); min-width: 0; }
+.get b { font-family: var(--display); font-size: 22px; font-weight: 600; }
+.get span { font-size: 14.5px; color: var(--muted); }
+
+/* steps */
+.steps { display: grid; gap: 0; }
+.step { display: grid; grid-template-columns: 76px minmax(0, 1fr) minmax(0, 0.95fr); gap: 24px; padding-block: 30px; border-top: 1px solid var(--rule); align-items: start; }
+.step.nofig { grid-template-columns: 76px minmax(0, 1fr); }
+.num { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 0.9; color: var(--olive); font-variant-numeric: tabular-nums; }
+.num small { display: block; font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.1em; color: var(--muted); margin-top: 6px; }
+.body { display: grid; gap: 12px; min-width: 0; }
+.head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+.pill { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--olive-soft); color: var(--olive); }
+.pill.plan { background: var(--amber-soft); color: var(--amber); }
+.pill.part { background: var(--amber-soft); color: var(--amber); }
+dl { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 14.5px; }
+dt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+dd { margin: 0; min-width: 0; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.tools code { background: var(--sheet); border: 1px solid var(--rule); padding: 1px 7px; border-radius: 3px; font-size: 12.5px; }
+.sample { background: var(--sheet); border-left: 3px solid var(--steel); padding: 10px 14px; font-size: 14.5px; display: grid; gap: 4px; }
+.sample .eyebrow { color: var(--steel); }
+
+/* tables */
+.scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 720px; }
+th, td { text-align: left; padding: 9px 12px; border-top: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; border-top: 0; }
+td:first-child { font-weight: 500; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.list { display: grid; gap: 10px; margin: 0; padding-left: 20px; max-width: 70ch; }
+.list li::marker { color: var(--olive); }
+.gates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.gates div { background: var(--sheet); border: 1px solid var(--rule); padding: 12px 14px; display: grid; gap: 4px; }
+.gates b { font-family: var(--display); font-size: 20px; font-weight: 600; }
+.gates span { font-size: 13.5px; color: var(--muted); }
+.gates em { font-style: normal; font-family: var(--mono); font-size: 12.5px; color: var(--olive); }
+footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); display: grid; gap: 8px; }
+
+@media (max-width: 900px) {
+  .hero, .two { grid-template-columns: minmax(0, 1fr); }
+  .stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stage::after { display: none; }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts div { border-left: 0; border-top: 1px solid var(--rule); }
+  .get, .gates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .step, .step.nofig { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .num { font-size: 36px; }
+}
+@media (max-width: 480px) {
+  .get, .gates, .facts { grid-template-columns: minmax(0, 1fr); }
+  dl { grid-template-columns: minmax(0, 1fr); }
+  dt { padding-top: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section class="hero" aria-labelledby="t">
+  <div class="lede">
+    <div class="eyebrow">Weapon Lab · Blueprint Lab and Gun Kit</div>
+    <h1 id="t">Gun Digitizer</h1>
+    <p>A real gun's digital copy, made from its public sources and nothing else. The tools read the manual, measure its figures, build the model, rig every moving part and animate it the way the real gun works. Every number in the copy names the page it came from.</p>
+    <p>The sample is the M1911A1 pistol, built from one book: <i>FM 23-35, Basic Field Manual: Automatic Pistol, Caliber .45</i> (War Department, 1940).</p>
+  </div>
+  <figure class="figure">
+    <img src="img/showcase.gif" alt="The M1911A1 copy: the manual's photo beside the copy, one turn round it, the slide cycling, the empty reload, the chamber check and the magazine check." width="720" height="450">
+    <figcaption><b>The M1911A1 showcase.</b> Blueprint Lab model view, not a game view. 24 s: the source beside the copy, one turn, firing at 6× slow, the empty reload, the chamber and magazine checks.</figcaption>
+  </figure>
+</section>
+
+<div class="facts" role="list" aria-label="The M1911A1 sample in numbers">
+  <div role="listitem"><strong>1940</strong><span>one public-domain field manual, 102 pages</span></div>
+  <div role="listitem"><strong>20 / 20</strong><span>visible parts in the manual's parts list, all modelled (43 listed)</span></div>
+  <div role="listitem"><strong>0.991</strong><span>outline match against the manual's photo (IoU)</span></div>
+  <div role="listitem"><strong>7</strong><span>gun clips, from firing to the magazine check</span></div>
+  <div role="listitem"><strong>0.0005 cm</strong><span>worst gap between a clip and its timeline</span></div>
+</div>
+
+<section aria-labelledby="s-stages">
+  <div class="eyebrow">The workflow at a glance</div>
+  <h2 id="s-stages">Five stages, thirteen steps</h2>
+  <div class="stages">
+    <div class="stage"><b>Set up</b><span>The gun, its action family, the character, the grip style</span><small>step 0</small></div>
+    <div class="stage"><b>Blueprint Lab</b><span>Sources read, figures scaled and traced, every part written down</span><small>steps 1 to 7</small></div>
+    <div class="stage"><b>Model</b><span>Built in Blender, one object a part, its finishes</span><small>step 8</small></div>
+    <div class="stage"><b>Gun Kit</b><span>Rig, the gun's clips, the hands, the checks</span><small>steps 9 and 10</small></div>
+    <div class="stage"><b>Deliver</b><span>The proof, your approval, a game's adapter</span><small>steps 11 and 12</small></div>
+  </div>
+</section>
+
+<section aria-labelledby="s-get">
+  <div class="eyebrow">What comes out, for every gun</div>
+  <h2 id="s-get">Four deliverables</h2>
+  <div class="get">
+    <div><b>The 3D model</b><span>The gun's real parts, shaped and detailed, each its own object with its finish.</span></div>
+    <div><b>Motion</b><span>A rig with one bone a moving part, the gun's own clips and the hand clips on the character's arms.</span></div>
+    <div><b>The blueprint</b><span>The gun as data. Each size and shape names its source page and figure; each guess says why.</span></div>
+    <div><b>The proof pack</b><span>Every check's result and labelled pictures of the copy over its source figures.</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="s-steps">
+  <div class="eyebrow">Step by step, with the M1911A1</div>
+  <h2 id="s-steps">The steps</h2>
+  <div class="steps">
+
+    <article class="step nofig">
+      <div class="num">0<small>SET UP</small></div>
+      <div class="body">
+        <div class="head"><h3>Choose the gun, its family, the character</h3><span class="pill part">Partly built</span></div>
+        <p>The gun's action family decides its moving parts and its clips. The character decides the arms, the hands' size, their gloves and their finish. The grip style decides how those hands hold this kind of gun. All three are set before anything is made, because each one changes what later steps build and check.</p>
+        <dl>
+          <dt>Who</dt><dd>You pick the gun and the character. Claude names the action family and the grip style from the sources.</dd>
+          <dt>Tools</dt><dd class="tools"><code>gunkit_actions</code><code>gunkit_action</code></dd>
+          <dt>Out</dt><dd>The action family (18 exist), the grip style and the character profile (both planned, step 10)</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Action family <code>pistol_slide</code>: slide, magazine, hammer, trigger, slide stop, magazine catch. Grip style: pistol, two hands.</div>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="num">1<small>SOURCES</small></div>
+      <div class="body">
+        <div class="head"><h3>Gather the sources</h3><span class="pill">Built</span></div>
+        <p>Each file is registered with its license, then every page is sorted into text, table or figure, with the figures' captions. Manuals, US patents and photos all count. Maker manuals do not: they are copyrighted.</p>
+        <dl>
+          <dt>Who</dt><dd>The tools scan; Claude reads the pages they draw.</dd>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_source_add</code><code>blueprint_scan</code><code>blueprint_page</code><code>blueprint_text</code></dd>
+          <dt>In</dt><dd>PDFs and pictures</dd>
+          <dt>Out</dt><dd><code>sources.json</code> (<code>weaponlab-sources/1</code>)</dd>
+          <dt>Gate</dt><dd>Every source has a license basis.</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>FM 23-35 (1940), a US government work: 102 pages, 12 of them figures and 6 tables.</div>
+      </div>
+      <figure class="figure"><img src="img/manual_pages.jpg" alt="Twelve pages of FM 23-35 side by side, with the photos on pages 6 and 7 and the sections on pages 11 and 12." loading="lazy" width="1374" height="728"><figcaption><b>Figure 1.</b> Pages 5 to 16 of the manual, as the scan draws them: the two photos (pages 6, 7) and the sectional views (pages 11, 12).</figcaption></figure>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">2<small>FACTS</small></div>
+      <div class="body">
+        <div class="head"><h3>Read the facts</h3><span class="pill">Built</span></div>
+        <p>The tools find each data-table quantity: overall length, barrel length, heights, weights, capacity. Claude checks each one on the page picture, because an old table often prints its numbers apart from their labels. Each fact is kept in cm or kg with its page and the line it came from.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_specs</code><code>blueprint_fact_add</code></dd>
+          <dt>Out</dt><dd>The facts in <code>sources.json</code></dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1 · page 8</span>Overall length 8.593 in (21.83 cm). Barrel 5.03 in. Front sight 0.5597 in above the bore. Weight with magazine 2.437 lb. Seven rounds.</div>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="num">3<small>FIGURES</small></div>
+      <div class="body">
+        <div class="head"><h3>Scale and frame the figures</h3><span class="pill">Built</span></div>
+        <p>A figure is cut from its page and stood upright. Its scale comes from a printed scale bar, from a length fact, or from a part another scaled figure also shows. Its frame comes from the bore line and the bolt face. After that, every pixel on it has a place in the gun's own space.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_figure_add</code><code>blueprint_grid</code><code>blueprint_calibrate</code><code>blueprint_frame</code><code>blueprint_align</code></dd>
+          <dt>Out</dt><dd>Figures with a scale and a frame</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>The photo is scaled by the overall length (0.0293 cm a pixel). Its bore sits 1.42 cm under the front sight, and the breech face is a barrel's length behind the muzzle. The section is matched to the photo on the trigger guard, and the two sides agree within 2 percent.</div>
+      </div>
+      <figure class="figure"><img src="img/source_section.jpg" alt="The manual's sectional side view of the M1911A1, with every part labelled by name and drawing number and an inches scale bar." loading="lazy" width="1200" height="747"><figcaption><b>Figure 2.</b> FM 23-35 Figure 3, the sectional view, stood upright. Every part carries its drawing number (<span class="mono">D1827</span> slide, <span class="mono">B8604</span> trigger). The slide is drawn locked back.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">4<small>READINGS</small></div>
+      <div class="body">
+        <div class="head"><h3>Trace and measure</h3><span class="pill">Built</span></div>
+        <p>Outlines and lengths come from the tools, never from the eye:</p>
+        <ul class="list">
+          <li>a whole silhouette, a closed area, a rough outline snapped onto the ink, or a patch in a halftone</li>
+          <li>ink spans along a line, scale-bar ticks, and the count and pitch of faint marks</li>
+          <li>smoothing for the edge noise a halftone leaves, keeping the corners sharp</li>
+        </ul>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_trace</code><code>blueprint_measure</code></dd>
+          <dt>Out</dt><dd>Kept traces, in pixels and in gun cm</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>The photo outline drops from 147 points to 53 once smoothed. 14 rear serrations sit 0.176 cm apart. The slide's lower edge is 1.34 cm under the bore.</div>
+      </div>
+      <figure class="figure"><img src="img/edge_noise.jpg" alt="The traced outline of the pistol: the raw trace in red, with jagged edges, and the smoothed one in green, straight." loading="lazy" width="1000" height="632"><figcaption><b>Figure 3.</b> Edge noise: the raw trace (red) follows the photo's halftone dots; the smoothed trace (green) keeps the corners. Trace test, not a model view.</figcaption></figure>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">5<small>BLUEPRINT</small></div>
+      <div class="body">
+        <div class="head"><h3>Write the blueprint</h3><span class="pill">Built</span></div>
+        <p>Each part is written down with its shape, holes, role in the action, motion and finish. Every number names where it came from: a figure, a fact, how it was worked out, or a guess with its reason. The check fails any number with no source.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_new</code><code>blueprint_part</code><code>blueprint_hole</code><code>blueprint_mark</code></dd>
+          <dt>Out</dt><dd><code>blueprint.json</code> (<code>weaponlab-blueprint/1</code>)</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Slide travel 4.75 cm: the section draws the slide locked back, the photo closed. Slide 2.43 cm wide. Grip 3.29 cm across the stocks.</div>
+      </div>
+    </article>
+
+    <article class="step">
+      <div class="num">6<small>DETAIL</small></div>
+      <div class="body">
+        <div class="head"><h3>The detail pass</h3><span class="pill">Built</span></div>
+        <p>A silhouette becomes the gun:</p>
+        <ul class="list">
+          <li><b>Three views:</b> each part takes the shape its side, front and top views share.</li>
+          <li><b>Every visible part:</b> each part in the source's parts list gets a blueprint part.</li>
+          <li><b>Surface features:</b> serrations and screw heads are cut into the mesh; checkering and knurling go to the finish.</li>
+        </ul>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_views</code><code>blueprint_feature</code><code>blueprint_parts_list</code><code>blueprint_numbers</code></dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>43 parts read off the sections, 20 visible and all 20 modelled. The slide's rounded top comes from section A-A, the stocks' curve from the plan view. The text adds the knurled trigger face (page 6) and the checkered magazine catch (page 13).</div>
+      </div>
+      <figure class="figure"><img src="img/model_three_quarter.jpg" alt="The copy from three quarters: parkerized slide and frame, brown stocks with screws, rear serrations, sights, hammer and grip safety." loading="lazy" width="1200" height="771"><figcaption><b>Figure 4.</b> The copy after the detail pass. Blueprint Lab model view, not a game view.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">7<small>CHECK</small></div>
+      <div class="body">
+        <div class="head"><h3>Check the blueprint</h3><span class="pill">Built</span></div>
+        <p>Four gates, each drawn on the source figures so you can see it:</p>
+        <div class="gates">
+          <div><b>Contract</b><span>Every number has a source.</span><em>0 problems</em></div>
+          <div><b>Outline</b><span>IoU at least 0.95, mean gap at most 0.15 cm.</span><em>0.991 · 0.011 cm</em></div>
+          <div><b>Length</b><span>Within 1 percent of the fact.</span><em>21.83 cm</em></div>
+          <div><b>Detail</b><span>Every visible listed part is modelled.</span><em>20 of 20</em></div>
+        </div>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_check</code></dd>
+          <dt>Warns</dt><dd>The weight. The copy is solid where the gun is hollow, so it reads high.</dd>
+        </dl>
+      </div>
+      <figure class="figure"><img src="img/overlay.jpg" alt="The manual's photo with every blueprint part's outline drawn over it in colour." loading="lazy" width="1000" height="644"><figcaption><b>Figure 5.</b> The blueprint drawn on the source photo, one colour a part. Source figure with overlay, not a model view.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">8<small>MODEL</small></div>
+      <div class="body">
+        <div class="head"><h3>Build the model</h3><span class="pill">Built</span></div>
+        <p>Blender builds the blueprint: one object a part, a material a finish, the cuts and the features. It writes the parts map Gun Kit rigs from, so no one has to name the parts by hand.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_build</code></dd>
+          <dt>Out</dt><dd><code>M1911A1.blend</code>, <code>partsmap.json</code>, labelled views</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>19 parts, from the slide to the magazine's base plate <span class="mono">B8606</span>.</div>
+      </div>
+      <figure class="figure"><img src="img/model_right.jpg" alt="The copy's right side: the ejection port with the barrel inside, the stocks, the trigger guard." loading="lazy" width="837" height="524"><figcaption><b>Figure 6.</b> The right side, with the ejection port. Blueprint Lab model view, not a game view.</figcaption></figure>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">9<small>MOTION</small></div>
+      <div class="body">
+        <div class="head"><h3>Rig it and make its clips</h3><span class="pill">Built</span></div>
+        <p>Gun Kit gives each moving part a bone and keys the action family's clips on it. A magazine leaves and enters along its own well's line, not straight down. Each clip is read back from Blender and compared with its timeline.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_to_gunkit</code><code>gunkit_rig</code><code>gunkit_build</code><code>gunkit_verify</code></dd>
+          <dt>Gate</dt><dd>Each clip reads back within 0.05 cm.</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Six bones: slide, magazine, hammer, trigger, magazine catch, slide stop. Seven clips: fire, fire_last, reload, reload_empty, charge, check_chamber, check_mag. The worst read-back gap is 0.0005 cm. The magazine leaves along the grip's 18.7° slant.</div>
+      </div>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">10<small>HANDS</small></div>
+      <div class="body">
+        <div class="head"><h3>Hands by grip style, on the character</h3><span class="pill plan">Redesign planned</span></div>
+        <p>Today every gun uses one universal hand, and its clips fail the anatomy and grip checks on every gun. The redesign keeps one skeleton, so every clip plays on every character, and gives each grip style its own hand setup:</p>
+        <ul class="list">
+          <li>where the firing hand's web, thumb and trigger finger go</li>
+          <li>where the support hand holds, and how</li>
+          <li>the wrist and elbow targets for the stance</li>
+          <li>which hand does what in a reload</li>
+          <li>its own rules, such as the thumb clear of a pistol slide's path</li>
+        </ul>
+        <p>The hands are made on the character set in step 0, with its glove thickness counted in the clearance.</p>
+        <dl>
+          <dt>Gate</dt><dd>Every frame: anatomy, the style's grip rules, clearance with the glove, the sights each clip expects.</dd>
+        </dl>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Grip style "pistol, two hands": the firing hand high under the tang, the support hand wrapping its fingers, both thumbs forward. Source: FM 3-23.35 (2003), paragraph 2-3.</div>
+      </div>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">11<small>PROOF</small></div>
+      <div class="body">
+        <div class="head"><h3>The proof and the showcase</h3><span class="pill">Built</span></div>
+        <p>The proof pack gathers the overlays, the model views and every check's numbers. The showcase is a labelled GIF and MP4: the source beside the copy, one turn round it, and its own clips.</p>
+        <dl>
+          <dt>Tools</dt><dd class="tools"><code>blueprint_showcase</code></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="step nofig">
+      <div class="num">12<small>DELIVER</small></div>
+      <div class="body">
+        <div class="head"><h3>Approve and deliver</h3><span class="pill part">Waits on the hands</span></div>
+        <p>You approve on the pictures. A game takes the gun through its own adapter. The ToangTown adapter imports it to staging, plays it in the real game, runs the Gate and, once you approve, moves it into the game's content as a data file.</p>
+        <dl>
+          <dt>Who</dt><dd>You approve; nothing reaches a game's content before that.</dd>
+          <dt>Tools</dt><dd class="tools"><code>tt-gunkit: import_staging</code><code>trial</code><code>approve</code></dd>
+        </dl>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section aria-labelledby="s-grip">
+  <div class="eyebrow">Step 10 in detail</div>
+  <h2 id="s-grip">Grip styles</h2>
+  <p>A grip style is data, as an action family is. Each family names its default style, and a gun may name another (a bullpup).</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Grip style</th><th>Action families</th><th>Firing hand</th><th>Support hand</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Pistol, two hands</td><td>pistol slide, energy cell pistol</td><td>high under the tang, thumb forward along the frame</td><td>wraps the firing fingers, thumb forward under the slide's path</td><td>FM 3-23.35 (2003), para. 2-3</td></tr>
+        <tr><td>Revolver, two hands</td><td>swing-out revolver</td><td>high on the back strap, thumb clear of the cylinder gap</td><td>wraps the firing fingers, thumb clear of the cylinder</td><td>FM 23-35 (1988), to read</td></tr>
+        <tr><td>Rifle, pistol grip</td><td>AR gas, reciprocating handle, open bolt, energy cell</td><td>the pistol grip, thumb over or beside it</td><td>under the handguard, or a C-clamp</td><td>TC 3-22.9 (2016), ch. 6</td></tr>
+        <tr><td>Rifle, straight stock</td><td>bolt (box, stripper clip), lever</td><td>the stock's wrist, thumb over it</td><td>under the fore-end</td><td>FM 23-10 (1994), ch. 3</td></tr>
+        <tr><td>Shotgun, pump</td><td>pump tube</td><td>the stock's wrist</td><td>wraps the fore-end and works it</td><td>TM 9-285 (1942), to read</td></tr>
+        <tr><td>Shotgun, semi-automatic</td><td>semi tube</td><td>the stock's wrist</td><td>under the fore-end</td><td>TM 9-285 (1942), to read</td></tr>
+        <tr><td>Machine gun, belt</td><td>belt-fed open bolt</td><td>the pistol grip</td><td>on the stock, or the feed cover to load</td><td>FM 3-22.68 (2003), to read</td></tr>
+        <tr><td>Launchers</td><td>break-open, muzzle loaded</td><td>the stock's wrist or the pistol grip</td><td>under the barrel or the front grip</td><td>FM 23-31 (1972), to read</td></tr>
+        <tr><td>Bow, crossbow, flamethrower</td><td>their own</td><td>their own</td><td>their own</td><td>the action's sources</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="s-char">
+  <div class="eyebrow">Step 0 in detail</div>
+  <h2 id="s-char">The character comes first</h2>
+  <div class="two">
+    <div class="body">
+      <p>The character profile is the hand step's first input. It sets:</p>
+      <ul class="list">
+        <li><b>Arms:</b> the arms mesh on the shared skeleton, and whether the character is right- or left-handed.</li>
+        <li><b>Hand size:</b> palm width and finger length, which set how far a hand reaches round a grip.</li>
+        <li><b>Hand covering:</b> bare skin and its tone, fingerless gloves, or full gloves with their material and thickness; and the sleeves.</li>
+        <li><b>Finish:</b> the skin, glove and sleeve finishes, from Coating Lab.</li>
+      </ul>
+    </div>
+    <div class="body">
+      <p>It comes before any hand clip because it changes what the hands are checked against:</p>
+      <ul class="list">
+        <li>A glove adds 2 to 3 mm to every finger and the palm, so clearance and finger closure change.</li>
+        <li>A small hand cannot wrap a large grip the same way.</li>
+        <li>The finish goes on the arms, so every picture shows the character who holds the gun.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="s-limits">
+  <div class="eyebrow">Version 1</div>
+  <h2 id="s-limits">What it is, and what it is not yet</h2>
+  <div class="two">
+    <div class="body">
+      <h3>A visual copy</h3>
+      <ul class="list">
+        <li>The outside, and every part the player sees move.</li>
+        <li>No manufacturing data: no tolerances, no fire-control geometry, nothing a part could be made from.</li>
+        <li>The sources are flat. Widths come from a plan view when there is one, otherwise from a reasoned guess.</li>
+        <li>Figures disagree by 5 to 10 percent on small features, so outer shapes come from the figure scaled by a printed fact.</li>
+      </ul>
+    </div>
+    <div class="body">
+      <h3>Next</h3>
+      <ul class="list">
+        <li>The hands by grip style, on the character (step 10).</li>
+        <li>Cross-sections for the frame, the magazine and the small parts.</li>
+        <li>The AR-15 from its blueprint, checked against Model Lab's hand-built AR-15.</li>
+        <li>One gun for each action family.</li>
+        <li>Later, the same chain for any object with moving parts, with the gun as one sample.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Code and docs: <a href="https://github.com/hpdkhoa/weaponlab-mcp">github.com/hpdkhoa/weaponlab-mcp</a> (<span class="mono">docs/DIGITIZE.md</span>, <span class="mono">docs/BLUEPRINT.md</span>, <span class="mono">docs/GUNKIT.md</span>, <span class="mono">examples/m1911a1/</span>).</div>
+  <div>Source: FM 23-35, Basic Field Manual: Automatic Pistol, Caliber .45, M1911 and M1911A1, War Department, 1940; a US government work, <a href="https://archive.org/details/fm-23-35-automatic-pistol-caliber-.-45-m-1911-and-m-1911-a-1-1940">on archive.org</a>.</div>
+</footer>
+
+</div>
+
+</body>
+</html>
