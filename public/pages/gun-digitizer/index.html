@@ -147,7 +147,7 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
     <div class="eyebrow">Weapon Lab · Blueprint Lab and Gun Kit</div>
     <h1 id="t">Gun Digitizer</h1>
     <p>A real gun's digital copy, made from its public sources and nothing else. The tools read the manual, measure its figures, build the model, rig every moving part and animate it the way the real gun works. Every number in the copy names the page it came from.</p>
-    <p>The sample is the M1911A1 pistol, built from one book: <i>FM 23-35, Basic Field Manual: Automatic Pistol, Caliber .45</i> (War Department, 1940).</p>
+    <p>The sample is the M1911A1 pistol. It started from one book: <i>FM 23-35, Basic Field Manual: Automatic Pistol, Caliber .45</i> (War Department, 1940). It is now rebuilt from the gun's own engineering drawings: the Ordnance Department's 1936 sheets, revised to 1944.</p>
   </div>
   <figure class="figure">
     <img src="img/showcase.gif" alt="The M1911A1 copy: the manual's photo beside the copy, one turn round it, the slide cycling, the empty reload, the chamber check and the magazine check." width="720" height="450">
@@ -158,7 +158,8 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
 <div class="facts" role="list" aria-label="The M1911A1 sample in numbers">
   <div role="listitem"><strong>1940</strong><span>one public-domain field manual, 102 pages</span></div>
   <div role="listitem"><strong>20 / 20</strong><span>visible parts in the manual's parts list, all modelled (43 listed)</span></div>
-  <div role="listitem"><strong>0.991</strong><span>outline match against the manual's photo (IoU)</span></div>
+  <div role="listitem"><strong>21.824 cm</strong><span>overall length, against 21.826 printed in the manual</span></div>
+  <div role="listitem"><strong>34 of 52</strong><span>frame outline points set by the drawing's printed dimensions</span></div>
   <div role="listitem"><strong>7</strong><span>gun clips, from firing to the magazine check</span></div>
   <div role="listitem"><strong>0.0005 cm</strong><span>worst gap between a clip and its timeline</span></div>
 </div>
@@ -406,6 +407,72 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
   </div>
 </section>
 
+<section aria-labelledby="s-drawings">
+  <div class="eyebrow">Update, 21 October 2026</div>
+  <h2 id="s-drawings">Rebuilt from the 1936 Ordnance drawings</h2>
+  <p>The first copy came from the manual's photo. Its parts were flat side outlines pushed straight across, with square edges. A hand holding it hit those edges. So the gun is now rebuilt from the drawings the Army made it from.</p>
+  <div class="steps">
+
+    <article class="step">
+      <div class="num">A<small>SOURCE</small></div>
+      <div class="body">
+        <div class="head"><h3>The drawings</h3><span class="pill">Built</span></div>
+        <p>Eight scanned sheets, stamped Ordnance Dept. U.S.A., a US government work:</p>
+        <ul class="list">
+          <li><b>Exact numbers:</b> the receiver (frame) D35359, the stocks C64062, the barrel C3838, the hammer C3839, the trigger B8604.</li>
+          <li><b>Section views:</b> the whole gun assembled, with an inch scale bar. The slide, grip safety, housing and magazine come from these.</li>
+        </ul>
+        <div class="sample"><span class="eyebrow">M1911A1</span>191 frame values read off the scan, 102 of them high confidence. The frame outline is built like a CAD sketch: 34 of its 52 points are set by printed dimensions, the rest traced. It fits the drawn lines within 0.018 in on average.</div>
+      </div>
+      <figure class="figure"><img src="img/drawings_receiver.jpg" alt="The receiver drawing D35359 with the frame outline drawn on it: red where a printed dimension sets it, green where it is traced, the trigger guard bows and fillets as arcs." width="1240" height="880"><figcaption><b>Figure A.</b> The frame outline on drawing D35359: red set by printed dimensions, green traced. Dev overlay, not a model view.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">B<small>BUILD</small></div>
+      <div class="body">
+        <div class="head"><h3>Real shapes, not slabs</h3><span class="pill">Built</span></div>
+        <p>Blueprint Lab learned three new shapes:</p>
+        <ul class="list">
+          <li><b>Drawing radii:</b> an outline corner carries its printed radius and becomes a true arc (the guard's .462 in and .59 in bows, the 9/16 in and 7/16 in fillets).</li>
+          <li><b>Curved panels:</b> a relief, flat inside and arched outside. The stocks are .260 in thick at the middle and thin to 1/32 in rounded rims, as drawing C64062 shows.</li>
+          <li><b>Swept sections:</b> a cut along a slanted edge. The front strap gets its 17/32 in round across the .762 in frame width.</li>
+        </ul>
+        <div class="sample"><span class="eyebrow">M1911A1</span>Every edge a hand touches is rounded. The radius comes from the drawing, or at least 0.75 mm from MIL-STD-1472G 5.7.7.6 when the drawing gives none.</div>
+      </div>
+      <figure class="figure"><img src="img/drawings_panel.jpg" alt="The grip panel close up: a smooth domed face with two screws, and an end view showing the flat inside and the crescent outside." width="1400" height="754"><figcaption><b>Figure B.</b> The grip panel from drawing C64062: the domed face, and its crescent section seen end on. Blueprint Lab dev views, not game views.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">C<small>CHECK</small></div>
+      <div class="body">
+        <div class="head"><h3>Checked against the sources</h3><span class="pill">Built</span></div>
+        <div class="gates">
+          <div><b>Drawing</b><span>Every part drawn back on the 1936 section view.</span><em>on the lines</em></div>
+          <div><b>Length</b><span>Within 1 percent of the manual's 8.593 in.</span><em>21.824 cm · 0.01 %</em></div>
+          <div><b>Gun Kit</b><span>Rig and the 7 clips read back.</span><em>0.0005 cm</em></div>
+          <div><b>Photo</b><span>The 1940 photo, now a cross-check only.</span><em>IoU 0.86</em></div>
+        </div>
+        <p>The photo match fell from 0.99 to 0.86, because the copy now follows the drawings, not the photo. The biggest gaps are the hammer (the photo shows it cocked, the copy is at rest), the grip safety's tip and the magazine base.</p>
+      </div>
+      <figure class="figure"><img src="img/drawings_overlay.jpg" alt="The 1936 sectional view of the M1911A1 with the rebuilt model's parts drawn on it in colour: slide, frame, barrel, grip safety, housing, magazine and trigger on the drawn lines." width="1400" height="891"><figcaption><b>Figure C.</b> The rebuilt parts drawn on the 1936 sectional view. Dev overlay, not a model view.</figcaption></figure>
+    </article>
+
+    <article class="step">
+      <div class="num">D<small>RESULT</small></div>
+      <div class="body">
+        <div class="head"><h3>Before and after</h3><span class="pill">Built</span></div>
+        <ul class="list">
+          <li>The frame is .762 in wide, as printed. The photo copy guessed 2.47 cm (0.97 in).</li>
+          <li>The barrel, trigger and hammer follow their own drawings.</li>
+          <li>The marks the hand tools use (grip, trigger, muzzle, magazine) are measured again on the new parts.</li>
+        </ul>
+      </div>
+      <figure class="figure"><img src="img/drawings_before_after.jpg" alt="Two rows of the M1911A1 model: above, the photo-built copy with flat parts; below, the drawing-built copy with curved stocks, rounded guard and front strap." width="1400" height="1006"><figcaption><b>Figure D.</b> Above, the copy from the 1940 photo. Below, the copy from the 1936 drawings. Blueprint Lab model views, not game views.</figcaption></figure>
+    </article>
+
+  </div>
+</section>
+
 <section aria-labelledby="s-grip">
   <div class="eyebrow">Step 10 in detail</div>
   <h2 id="s-grip">Grip styles</h2>
@@ -461,7 +528,8 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
       <ul class="list">
         <li>The outside, and every part the player sees move.</li>
         <li>No manufacturing data: no tolerances, no fire-control geometry, nothing a part could be made from.</li>
-        <li>The sources are flat. Widths come from a plan view when there is one, otherwise from a reasoned guess.</li>
+        <li>The sources are flat. Widths come from a printed dimension or a plan view when there is one, otherwise from a reasoned guess.</li>
+        <li>Four parts have no drawing of their own in the set (the slide, grip safety, housing and magazine): they are traced from the section view, good to about 0.03 to 0.07 in.</li>
         <li>Figures disagree by 5 to 10 percent on small features, so outer shapes come from the figure scaled by a printed fact.</li>
       </ul>
     </div>
@@ -470,7 +538,8 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
       <ul class="list">
         <li>Finish the hands (step 10): a grasp solver for the whole hand against the gun and the other hand, the working clips, the eye view checked in the game.</li>
         <li>Fit and feature checks, as Model Lab makes for its AR-15: each part's features one by one, a magazine in an open well, the slide's travel clear of the hammer, the sights in line.</li>
-        <li>Cross-sections for the frame, the magazine and the small parts.</li>
+        <li>The thumb safety, slide stop, magazine catch and lanyard loop still have their photo shapes, placed on the drawing's pins.</li>
+        <li>Cross-sections for the grip safety's tang, the arched housing and the hammer spur; the panels' checkering as geometry.</li>
         <li>The AR-15 from its blueprint, checked against Model Lab's hand-built AR-15.</li>
         <li>One gun for each action family.</li>
         <li>Later, the same chain for any object with moving parts, with the gun as one sample.</li>
