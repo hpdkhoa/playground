@@ -40,7 +40,7 @@
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; }
-img { max-width: 100%; }
+img, video { max-width: 100%; }
 [hidden] { display: none !important; }
 body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
 .wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
@@ -61,7 +61,7 @@ section:first-of-type { border-top: 0; }
 .hero .lede { display: grid; gap: 18px; }
 .hero .lede p { font-size: 18px; color: var(--muted); }
 .figure { display: grid; gap: 8px; margin: 0; min-width: 0; }
-.figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--sheet); }
+.figure img, .figure video { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--sheet); }
 .figure figcaption { font-family: var(--mono); font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 .figure figcaption b { color: var(--ink); font-weight: 500; }
 
@@ -150,8 +150,8 @@ footer { padding-top: 28px; border-top: 1px solid var(--rule); font-size: 14px; 
     <p>The sample is the M1911A1 pistol. It started from one book: <i>FM 23-35, Basic Field Manual: Automatic Pistol, Caliber .45</i> (War Department, 1940). It is now rebuilt from the gun's own engineering drawings: the Ordnance Department's 1936 sheets, revised to 1944.</p>
   </div>
   <figure class="figure">
-    <img src="img/showcase.gif" alt="The M1911A1 copy rebuilt from the 1936 Ordnance drawings: the sectional drawing beside the copy, one turn round it, the slide cycling, the empty reload, the chamber check and the magazine check." width="720" height="450">
-    <figcaption><b>The M1911A1 showcase, rebuilt from the 1936 Ordnance drawings.</b> Blueprint Lab model view, not a game view. 24 s: the drawing beside the copy, one turn, firing at 6× slow, the empty reload, the chamber and magazine checks.</figcaption>
+    <video src="img/showcase.mp4" poster="img/showcase_poster.jpg" width="720" height="450" autoplay muted loop playsinline controls aria-label="The M1911A1 copy rebuilt from the 1936 Ordnance drawings: the sectional drawing beside the copy, one turn round it, the slide cycling, the empty reload, the chamber check and the magazine check."></video>
+    <figcaption><b>The M1911A1 showcase, rebuilt from the 1936 Ordnance drawings.</b> Blueprint Lab model view, not a game view. 26 s at 30 fps: the drawing beside the copy, one turn, firing at 6× slow, the empty reload (the magazine drops free and a new one slides in along the well's line), the chamber check (the round's brass case shows in the gap) and the magazine check. Every frame was checked: the magazine never cuts into the gun.</figcaption>
   </figure>
 </section>
 
